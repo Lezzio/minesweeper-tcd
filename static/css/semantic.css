@@ -1,0 +1,30 @@
+* {
+    color: blue;
+}
+
+div {
+    width: 20px;
+    height: 20px;
+}
+
+body {
+    background-color: white;
+}
+
+.cell {
+    width: 60px;
+    height: 60px;
+    border: 1px solid black;
+}
+
+.hidden {
+    background-color: beige;
+}
+
+.empty {
+    background-color: white;
+}
+
+.bomb {
+    background-color: brown;
+}
