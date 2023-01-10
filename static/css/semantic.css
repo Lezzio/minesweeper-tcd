@@ -28,3 +28,9 @@ body {
 .bomb {
     background-color: brown;
 }
+
+#minesweeper-wrapper {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-gap: 1px;
+}
