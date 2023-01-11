@@ -5,22 +5,11 @@ import Graphics.UI.Threepenny.Core
 import Graphics.UI.Threepenny.Elements
 import Graphics.UI.Threepenny.Events
 import Graphics.UI.Threepenny
-
 import Reactive.Threepenny
-import System.FilePath(dropFileName)
-import System.Environment(getExecutablePath)
-import Debug.Trace(trace)
 
 main :: IO ()
 main = do
  startGUI defaultConfig { jsStatic = Just "./static" } setup
-
-buttonUI :: Window -> UI ()
-buttonUI window = do
-    button <- UI.button #+ [string "Click me"]
-    getBody window #+ [return button]
-    on UI.click button  $\_ -> do
-     getBody window #+ [ UI.div #+ [ string "clicked!"] ]
 
 cellUI :: Window -> UI ()
 cellUI window = do
@@ -41,9 +30,9 @@ cellUI window = do
 setup :: Window -> UI ()
 setup window = do
  UI.addStyleSheet window "semantic.css"
+ button <- UI.button # set UI.text "Okay"
  wrapper <- UI.div # set UI.id_ "minesweeper-wrapper"
- getBody window #+ [string "Hello, world!", return wrapper]
- buttonUI window
+ getBody window #+ [string "Hello, world!", return wrapper, return button]
  cellUI window
  cellUI window
  cellUI window
