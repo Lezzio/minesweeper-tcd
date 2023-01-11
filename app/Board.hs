@@ -47,4 +47,5 @@ type GameResult = Invalid | Survived | Lost
 
 playMove :: Location -> Bool -> GameResult
 playMove loc isPlayerMove
-    | isBomb loc = 
+    | isBomb loc = Lost
+    | isDiscovered loc = Invalid
