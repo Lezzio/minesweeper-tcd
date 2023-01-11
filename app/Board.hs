@@ -36,3 +36,15 @@ locationNeighbors (x, y) = Prelude.filter (/= (x, y)) [(x-1, y-1), (x-1, y), (x-
 
 locationNeighborsInBoard :: Location -> [Location]
 locationNeighborsInBoard (x, y) = Prelude.filter (isInBoard) (locationNeighbors (x,y))
+
+hasBombNeighbors :: Location -> Bool
+hasBombNeighbors loc = foldl1 (||) (Prelude.map (\x -> isBomb x generateBoard) (locationNeighborsInBoard loc))
+
+countBombNeighbors :: Location -> Int
+countBombNeighbors loc = Prelude.foldl (\acc x -> if isBomb x generateBoard then acc+1 else acc) 0 (locationNeighborsInBoard loc)
+
+type GameResult = Invalid | Survived | Lost
+
+playMove :: Location -> Bool -> GameResult
+playMove loc isPlayerMove
+    | isBomb loc = 
