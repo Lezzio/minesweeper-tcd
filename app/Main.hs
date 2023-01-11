@@ -11,8 +11,8 @@ main :: IO ()
 main = do
  startGUI defaultConfig { jsStatic = Just "./static" } setup
 
-cellUI :: Window -> UI ()
-cellUI window = do
+cellUI :: Window -> Int -> Int -> UI ()
+cellUI window x y = do
     -- Create a cell as a HTML div
     -- add the default css class to the cell
     cell <- UI.div
@@ -33,85 +33,8 @@ setup window = do
  button <- UI.button # set UI.text "Okay"
  wrapper <- UI.div # set UI.id_ "minesweeper-wrapper"
  getBody window #+ [string "Hello, world!", return wrapper, return button]
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
- cellUI window
+ iterate2D 9 9 (\(x, y) -> cellUI window x y)
  return ()
+
+iterate2D :: Int -> Int -> ((Int, Int) -> UI ()) -> UI ()
+iterate2D rows cols f = mapM_ f [(x,y) | x <- [0..rows-1], y <- [0..cols-1]]
