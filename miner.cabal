@@ -41,6 +41,8 @@ library
 executable miner-exe
   main-is: Main.hs
   other-modules:
+      Board
+      Board2
       Paths_miner
   hs-source-dirs:
       app

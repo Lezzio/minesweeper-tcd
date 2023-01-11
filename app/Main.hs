@@ -19,13 +19,13 @@ buttonUI :: Window -> UI ()
 buttonUI window = do
     button <- UI.button #+ [string "Click me"]
     getBody window #+ [return button]
-    on UI.click button $ \_ -> do
+    on UI.click button  $\_ -> do
      getBody window #+ [ UI.div #+ [ string "clicked!"] ]
 
 cellUI :: Window -> UI ()
 cellUI window = do
-    -- create a cell as a HTML div
-    -- add a css class to the button
+    -- Create a cell as a HTML div
+    -- add the default css class to the cell
     cell <- UI.div
     element cell #. "cell hidden"
     getBody window #+ [return cell]
@@ -35,7 +35,7 @@ cellUI window = do
       Nothing -> getBody window #+ [string "Nothing!"]
     on UI.click cell $ \event -> do
      element cell #. "cell empty"
-     element cell # set UI.text "3"
+     {-element cell # set UI.text "3"-}
      getBody window #+ [string "Left Click detected!"]
 
 setup :: Window -> UI ()
