@@ -1,25 +1,30 @@
-module GameBoard (CellType(Hidden, Empty, Number, Bomb), Location, Board, PlayResult, getCellType, playMove, settings, generateBoard, emptyBoard, countBombNeighbors, isDiscovered, isBomb) where
+module GameBoard (CellType(Hidden, Empty, Number, Bomb), Location, Board, PlayResult,
+ getCellType, playMove, settings, generateBoard, emptyBoard, countBombNeighbors,
+  isDiscovered, isBomb, coordinatesBoard) where
 
 import Data.Set
 import qualified Data.Set as Set
+import System.Random
+import System.Random.Shuffle (shuffle')
+import Debug.Trace
+import qualified Data.List as List
 
 type Location = (Int, Int)
 
 data Settings = Settings
-  { width :: Int,
-    height :: Int,
-    bombsCount :: Int
+  { 
+    width :: Int
+  , height :: Int
+  , bombsCount :: Int
   }
 
-settings = Settings { width = 9, height = 9, bombsCount = 2 }
+settings = Settings { width = 9, height = 9, bombsCount = 10 }
 
 data Board = Board
-  { discoveredCells :: Set Location,
-    bombCells :: Set Location
+  { 
+    discoveredCells :: Set Location
+  , bombCells :: Set Location
   } deriving (Show)
-
-generateBoard :: Board
-generateBoard = Board {discoveredCells = empty :: Set Location, bombCells = Data.Set.fromList [(0, 0), (8, 8), (7, 7)]}
 
 emptyBoard :: Board
 emptyBoard = Board { discoveredCells = empty :: Set Location, bombCells = empty :: Set Location }
@@ -75,23 +80,47 @@ playMove board loc
 -}
 
 -- Populate the board here if it's empty, we have all the information for that
-playMove :: Board -> Location -> Board
-playMove board loc
-  | (isDiscovered board loc) = board -- already discovered, therefore invalid
-  | isBomb board loc = discoverCell board loc
+playMove :: Board -> Location -> StdGen -> Board
+playMove board loc gen
+  | isDiscovered playingBoard loc = playingBoard -- already discovered, therefore invalid
+  | isBomb playingBoard loc = discoverCell playingBoard loc
   | otherwise = newBoard
-  where newBoard = propagate board [loc]
+  where 
+    playingBoard = generateIfEmpty board loc gen
+    newBoard = propagate playingBoard [loc]
+
+hasWon :: Board -> Bool
+hasWon board = False -- TODO implement (remaining cells )
 
 propagate :: Board -> [Location] -> Board
 propagate board [] = board
 propagate board (head:locs) = propagate newBoard newLocs
   where 
-    influencedLocs = if (hasBombNeighbors board head) then [] else (locationNeighborsInBoardNotDiscovered board head) 
+    influencedLocs = 
+       if (hasBombNeighbors board head)
+        then [] 
+        else (locationNeighborsInBoardNotDiscovered board head) 
     newLocs = locs ++ influencedLocs
     newBoard = discoverCell board head
 
-hasWon :: Board -> Bool
-hasWon board = False -- TODO implement (remaining cells )
+-- The location provided is the one to exclude from bomb locations so that the user can't lose on first move
+generateIfEmpty :: Board -> Location -> StdGen -> Board
+generateIfEmpty board excludedLocation gen = 
+  if (Set.null $ bombCells board)
+     then trace "Generating board..." (generateBoard gen excludedLocation)
+     else board
+
+generateBoard :: StdGen -> Location -> Board
+generateBoard gen excludedLocation = Board {discoveredCells = empty :: Set Location, bombCells = generatedBombCells }
+  where
+    coordinates = coordinatesBoard 9 9
+    cooridnatesMinusExclusion = List.delete excludedLocation coordinates
+    shuffledCoordinates = shuffle' cooridnatesMinusExclusion (length cooridnatesMinusExclusion) gen
+    bombCount = bombsCount settings
+    generatedBombCells = fromList (Prelude.take bombCount shuffledCoordinates)
+
+coordinatesBoard :: Int -> Int -> [(Int, Int)]
+coordinatesBoard rows cols = [(x,y) | x <- [0..rows-1], y <- [0..cols-1]]
 
 {-
 playMove :: Location -> Bool -> GameResult
