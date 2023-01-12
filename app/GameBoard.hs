@@ -1,4 +1,4 @@
-module GameBoard () where
+module GameBoard (CellType(Hidden, Empty, Number, Bomb), Location, Board, PlayResult, getCellType, playMove, settings, generateBoard, emptyBoard, countBombNeighbors, isDiscovered, isBomb) where
 
 import Data.Set
 import qualified Data.Set as Set
@@ -16,10 +16,13 @@ settings = Settings { width = 9, height = 9, bombsCount = 2 }
 data Board = Board
   { discoveredCells :: Set Location,
     bombCells :: Set Location
-  }
+  } deriving (Show)
 
 generateBoard :: Board
 generateBoard = Board {discoveredCells = empty :: Set Location, bombCells = Data.Set.fromList [(0, 0), (8, 8), (7, 7)]}
+
+emptyBoard :: Board
+emptyBoard = Board { discoveredCells = empty :: Set Location, bombCells = empty :: Set Location }
 
 isInBoard :: Location -> Bool
 isInBoard (x, y) = x >= 0 && x < width settings && y >= 0 && y < height settings
@@ -61,11 +64,22 @@ discoverCell board loc = board { discoveredCells = Data.Set.insert loc (discover
 
 data PlayResult = Won | Lost | Survived | Invalid
 
+{-
+-- Populate the board here if it's empty, we have all the information for that
 playMove :: Board -> Location -> (Board, PlayResult)
 playMove board loc
   | (isDiscovered board loc) = (board, Invalid) -- already discovered, therefore invalid
-  | isBomb board loc = (board, Lost)
+  | isBomb board loc = (discoverCell board loc, Lost)
   | otherwise = (newBoard, if (hasWon newBoard) then Won else Survived)
+  where newBoard = propagate board [loc]
+-}
+
+-- Populate the board here if it's empty, we have all the information for that
+playMove :: Board -> Location -> Board
+playMove board loc
+  | (isDiscovered board loc) = board -- already discovered, therefore invalid
+  | isBomb board loc = discoverCell board loc
+  | otherwise = newBoard
   where newBoard = propagate board [loc]
 
 propagate :: Board -> [Location] -> Board
