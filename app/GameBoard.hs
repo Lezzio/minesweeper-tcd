@@ -18,7 +18,7 @@ data Settings = Settings
   , bombsCount :: Int
   }
 
-settings = Settings { width = 9, height = 9, bombsCount = 10 }
+settings = Settings { width = 9, height = 9, bombsCount = 2 }
 
 data Board = Board
   { 
@@ -89,8 +89,10 @@ playMove board loc gen
     playingBoard = generateIfEmpty board loc gen
     newBoard = propagate playingBoard [loc]
 
+-- To win the game the user must have discovered all the empty cells (discovered cells equals to width * height - bomb count)
+-- We must therefore also check that all the discovered cells aren't bombs (because the user can discover one bomb and lose)
 hasWon :: Board -> Bool
-hasWon board = False -- TODO implement (remaining cells )
+hasWon board = (Set.size $ discoveredCells board) == ((width settings) * (height settings) - (bombsCount settings))
 
 propagate :: Board -> [Location] -> Board
 propagate board [] = board

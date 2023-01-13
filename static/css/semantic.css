@@ -1,5 +1,5 @@
 * {
-    color: blue;
+    color: #4169E1;
 }
 
 div {
@@ -35,4 +35,17 @@ body {
 #minesweeper-wrapper {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
+}
+
+.red-text {
+    color: #dc1919;
+}
+.green-text {
+    color: #228B22;
+}
+.blue-text {
+    color: #4169E1	;
+}
+.purple-text {
+    color: rgb(99, 4, 99);
 }
