@@ -45,6 +45,7 @@ executable miner-exe
   other-modules:
       Board2
       GameBoard
+      IA
       Paths_miner
   hs-source-dirs:
       app

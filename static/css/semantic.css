@@ -32,6 +32,10 @@ body {
     background-color: brown;
 }
 
+.flag {
+    background-color: #47ce47;
+}
+
 body {
     width: fit-content;
     margin: auto;
