@@ -1,6 +1,6 @@
-module GameBoard (CellType(Hidden, Empty, Number, Bomb), Location, Board, PlayResult,
+module GameBoard (CellType(..), Location, Board, PlayResult(..),
  getCellType, playMove, settings, generateBoard, emptyBoard, countBombNeighbors,
-  isDiscovered, isBomb, coordinatesBoard) where
+  isDiscovered, isBomb, coordinatesBoard, revealBombs) where
 
 import Data.Set
 import qualified Data.Set as Set
@@ -67,18 +67,21 @@ getCellType board loc
 discoverCell :: Board -> Location -> Board
 discoverCell board loc = board { discoveredCells = Data.Set.insert loc (discoveredCells board) }
 
-data PlayResult = Won | Lost | Survived | Invalid
+data PlayResult = Won | Lost | Survived | Invalid deriving (Eq, Show)
+
+-- Populate the board here if it's empty, we have all the information for that
+playMove :: Board -> Location -> StdGen -> (Board, PlayResult)
+playMove board loc gen
+  | (isDiscovered board loc) = (playingBoard, Invalid) -- already discovered, therefore invalid
+  | isBomb board loc = (discoverCell playingBoard loc, Lost)
+  | otherwise = (newBoard, if hasWon newBoard then Won else Survived)
+  where 
+    -- We generate the board with the move being played excluded as a bomb if the board hasn't been generated before
+    -- We have this generation here to ensure we can't play by mistake without having a proper board
+    playingBoard = generateIfEmpty board loc gen
+    newBoard = propagate playingBoard [loc]
 
 {-
--- Populate the board here if it's empty, we have all the information for that
-playMove :: Board -> Location -> (Board, PlayResult)
-playMove board loc
-  | (isDiscovered board loc) = (board, Invalid) -- already discovered, therefore invalid
-  | isBomb board loc = (discoverCell board loc, Lost)
-  | otherwise = (newBoard, if (hasWon newBoard) then Won else Survived)
-  where newBoard = propagate board [loc]
--}
-
 -- Populate the board here if it's empty, we have all the information for that
 playMove :: Board -> Location -> StdGen -> Board
 playMove board loc gen
@@ -86,8 +89,12 @@ playMove board loc gen
   | isBomb playingBoard loc = discoverCell playingBoard loc
   | otherwise = newBoard
   where 
+    -- We generate the board with the move being played excluded as a bomb if the board hasn't been generated before
+    -- We have this generation here to ensure we can't play by mistake without having a proper board
     playingBoard = generateIfEmpty board loc gen
     newBoard = propagate playingBoard [loc]
+-}
+
 
 -- To win the game the user must have discovered all the empty cells (discovered cells equals to width * height - bomb count)
 -- We must therefore also check that all the discovered cells aren't bombs (because the user can discover one bomb and lose)
@@ -123,6 +130,9 @@ generateBoard gen excludedLocation = Board {discoveredCells = empty :: Set Locat
 
 coordinatesBoard :: Int -> Int -> [(Int, Int)]
 coordinatesBoard rows cols = [(x,y) | x <- [0..rows-1], y <- [0..cols-1]]
+
+revealBombs :: Board -> Board
+revealBombs board = Prelude.foldl discoverCell board (bombCells board)
 
 {-
 playMove :: Location -> Bool -> GameResult

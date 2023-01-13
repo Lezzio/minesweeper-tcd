@@ -1,5 +1,5 @@
 * {
-    color: #4169E1;
+    color: #294dbc;
 }
 
 div {
@@ -32,20 +32,48 @@ body {
     background-color: brown;
 }
 
-#minesweeper-wrapper {
+body {
+    width: fit-content;
+    margin: auto;
+}
+
+#grid-wrapper {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
+    width: fit-content;
+    height: fit-content;
 }
 
 .red-text {
     color: #dc1919;
 }
+
 .green-text {
     color: #228B22;
 }
+
 .blue-text {
     color: #4169E1	;
 }
+
 .purple-text {
     color: rgb(99, 4, 99);
+}
+
+button {
+    margin: 4px;
+}
+
+#game-status {
+    width: fit-content;
+    height: fit-content;
+    font: bold;
+    margin: 14px;
+    font-size: 18px;
+}
+
+#game-title {
+    font-size: 26px;
+    color: rgb(37, 1, 82);
+    margin: 14px;
 }
